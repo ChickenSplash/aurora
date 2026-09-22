@@ -1,0 +1,15 @@
+[Unit]
+Description=Aurora reactive wallpaper (Quickshell)
+# dms.service is optional: these lines do nothing without DankMaterialShell,
+# and with it they keep Aurora stacked above the DMS wallpaper after DMS restarts
+PartOf=graphical-session.target dms.service
+After=graphical-session.target dms.service
+Requisite=graphical-session.target
+
+[Service]
+ExecStart=/usr/bin/env qs -c aurora
+Restart=on-failure
+RestartSec=3
+
+[Install]
+WantedBy=graphical-session.target
