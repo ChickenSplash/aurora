@@ -2,7 +2,9 @@
 
 An audio-reactive aurora wallpaper for Wayland, built on [Quickshell](https://quickshell.org).
 
-![Aurora over a nebula wallpaper](docs/preview.png)
+[![Aurora over a nebula wallpaper](docs/preview.png)](docs/preview.mp4)
+
+▶ [Watch the video preview with sound](docs/preview.mp4) (37 s)
 
 ## What it does
 
