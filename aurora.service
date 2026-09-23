@@ -7,6 +7,7 @@ After=graphical-session.target dms.service
 Requisite=graphical-session.target
 
 [Service]
+ExecStartPre=%h/.config/quickshell/aurora/wait-for-wallpaper.sh
 ExecStart=/usr/bin/env qs -c aurora
 Restart=on-failure
 RestartSec=3

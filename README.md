@@ -82,7 +82,7 @@ To see the effect without music, run `AURORA_DEBUG=1 qs -c aurora` (fakes loud m
 
 ## Notes
 
-- **Stacking with another wallpaper tool:** Aurora needs to sit above it. Most compositors stack the newest background surface on top. If Aurora ends up hidden behind your wallpaper, restart it. With DMS the service handles this by restarting whenever DMS does.
+- **Stacking with another wallpaper tool:** Aurora needs to sit above it. Most compositors stack the newest background surface on top. With DMS on Hyprland, the service waits for the DMS wallpaper before starting (`wait-for-wallpaper.sh`) and restarts whenever DMS does. With other wallpaper tools, if Aurora ends up hidden, restart it.
 - **GPU cost:** with sound on one 1440p monitor, roughly 20 W extra on an RTX 3080. Lower `fps` to reduce it.
 - **Audio source:** `cava.conf` reads PipeWire's default output. Change `method` to `pulse` if you use PulseAudio.
 
