@@ -1,7 +1,9 @@
 {
-    "wallpaper": "auto",
-    "colours": "auto",
-    "pauseWhenCovered": true,
-    "fps": 30,
-    "idleFps": 12
+  "wallpaper": "auto",
+  "colours": "auto",
+  "tint": false,
+  "tintGamma": 1.6,
+  "pauseWhenCovered": true,
+  "fps": 30,
+  "idleFps": 12
 }

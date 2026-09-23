@@ -19,6 +19,8 @@ ShellRoot {
     property var cfg: ({
         wallpaper: "auto",
         colours: "auto",
+        tint: false,
+        tintGamma: 1.6,
         pauseWhenCovered: true,
         fps: 30,
         idleFps: 12
@@ -147,11 +149,34 @@ ShellRoot {
     // null until the DMS file has been tried, so pywal is only read once DMS is known missing
     property var dmsColoursFound: null
 
+    // Wallpaper tint stops, dark to light
+    property color tint0: "#001419"
+    property color tint1: "#103a3c"
+    property color tint2: "#29a298"
+    property color tint3: "#b7fefa"
+
+    function mixColour(a, b, t) {
+        a = Qt.color(a);
+        b = Qt.color(b);
+        return Qt.rgba(a.r + (b.r - a.r) * t, a.g + (b.g - a.g) * t, a.b + (b.b - a.b) * t, 1);
+    }
+
+    function setTint(stops) {
+        const own = cfg.tintColours;
+        if (Array.isArray(own) && own.length >= 4) stops = own;
+        tint0 = stops[0];
+        tint1 = stops[1];
+        tint2 = stops[2];
+        tint3 = stops[3];
+    }
+
     onColourModeChanged: {
         if (Array.isArray(colourMode) && colourMode.length >= 3) {
             colA = colourMode[0];
             colB = colourMode[1];
             colC = colourMode[2];
+            // No theme to read, so build the tint ramp from the first colour
+            setTint([mixColour("#000000", colA, 0.08), mixColour("#000000", colA, 0.4), colA, mixColour(colA, "#ffffff", 0.6)]);
         }
     }
 
@@ -168,6 +193,7 @@ ShellRoot {
                 root.colA = c.primary;
                 root.colB = c.tertiary;
                 root.colC = c.secondary;
+                root.setTint([c.background, c.primary_container, c.primary, c.on_primary_container]);
                 root.dmsColoursFound = true;
             } catch (e) {}
         }
@@ -180,10 +206,13 @@ ShellRoot {
         onFileChanged: reload()
         onLoaded: {
             try {
-                const c = JSON.parse(text()).colors;
+                const j = JSON.parse(text());
+                const c = j.colors;
                 root.colA = c.color4;
                 root.colB = c.color5;
                 root.colC = c.color6;
+                const bg = j.special?.background ?? c.color0;
+                root.setTint([bg, root.mixColour(bg, c.color4, 0.5), c.color4, j.special?.foreground ?? c.color7]);
             } catch (e) {}
         }
     }
@@ -246,7 +275,29 @@ ShellRoot {
             ShaderEffectSource {
                 id: wallTex
                 sourceItem: wall
-                // While paused, the plain image shows so there is no need for a wallpaper underneath
+                hideSource: true
+            }
+
+            // Tint pass: only redraws when the image or palette changes. While paused it is
+            // shown directly, so there is no need for a wallpaper underneath.
+            ShaderEffect {
+                id: tinted
+                anchors.fill: parent
+                visible: wall.status === Image.Ready
+                fragmentShader: Quickshell.shellDir + "/tint.frag.qsb"
+
+                property var source: wallTex
+                property real enabled: root.cfg.tint ? 1 : 0
+                property real gamma: root.cfg.tintGamma
+                property color tint0: root.tint0
+                property color tint1: root.tint1
+                property color tint2: root.tint2
+                property color tint3: root.tint3
+            }
+
+            ShaderEffectSource {
+                id: tintTex
+                sourceItem: tinted
                 hideSource: !win.hidden
             }
 
@@ -255,7 +306,7 @@ ShellRoot {
                 visible: wall.status === Image.Ready && !win.hidden
                 fragmentShader: Quickshell.shellDir + "/aurora.frag.qsb"
 
-                property var source: wallTex
+                property var source: tintTex
                 property real time: root.time
                 property real wave: root.wave
                 property real flicker: root.flicker

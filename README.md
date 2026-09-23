@@ -16,6 +16,7 @@ https://github.com/user-attachments/assets/e4768de2-8510-4474-8ba0-595d79bf5bbe
 - **Bottom glow:** a light rising from the bottom centre on bass
 - **CPU load** speeds everything up a little
 - **Colours** follow your theme (DankMaterialShell or pywal), or set your own
+- **Wallpaper tint** (optional): gradient-maps the wallpaper onto your palette on the GPU, so it recolours live when the theme changes
 - **Pauses when covered** (Hyprland): stops drawing while tiled or full-screen windows cover the workspace. Floating windows don't count.
 
 ## Requirements
@@ -53,9 +54,14 @@ Without systemd, run `qs -c aurora` from your compositor's autostart instead.
 |---|---|---|
 | `wallpaper` | `"auto"` / `"dms"` to follow DankMaterialShell, or an image path (`~` works) | `"auto"` |
 | `colours` | `"auto"` (DMS, then pywal), `"dms"`, `"pywal"`, or three hex colours like `["#ff4fa3", "#7c4dff", "#40c4ff"]` | `"auto"` |
+| `tint` | recolour the wallpaper through four palette colours (dark to light) | `false` |
+| `tintGamma` | gamma applied to brightness before tinting (higher is brighter) | `1.6` |
+| `tintColours` | optional four hex colours to override the tint ramp | not set |
 | `pauseWhenCovered` | stop drawing behind tiled windows (Hyprland only) | `true` |
 | `fps` | frame rate while sound is playing | `30` |
 | `idleFps` | frame rate when silent | `12` |
+
+The tint ramp comes from the colour source: DMS `background`, `primary_container`, `primary`, `on_primary_container`; pywal background, a mid tone, `color4` and foreground; or, with fixed colours, a dark-to-light ramp built from the first one. It uses HSB brightness (the brightest channel), so saturated detail in the image survives. Point `wallpaper` at the untinted original.
 
 Without DankMaterialShell, set `wallpaper` to an image path. Aurora then draws the wallpaper itself, so you don't need another wallpaper tool.
 
@@ -72,10 +78,11 @@ The numbers behind the look are in the code. Restart with `systemctl --user rest
 | Ray shimmer strength | `aurora.frag`, `* 0.25 *` | 0.25 |
 | Ray shimmer speed | `shell.qml`, `treble * 4.0` | 4.0 |
 
-After editing `aurora.frag`, rebuild the compiled shader (needs `qt6-shadertools`):
+After editing a shader, rebuild its compiled `.qsb` (needs `qt6-shadertools`):
 
 ```sh
 /usr/lib/qt6/bin/qsb --qt6 -o aurora.frag.qsb aurora.frag
+/usr/lib/qt6/bin/qsb --qt6 -o tint.frag.qsb tint.frag
 ```
 
 To see the effect without music, run `AURORA_DEBUG=1 qs -c aurora` (fakes loud mids).
