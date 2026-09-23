@@ -89,7 +89,7 @@ To see the effect without music, run `AURORA_DEBUG=1 qs -c aurora` (fakes loud m
 
 ## Notes
 
-- **Stacking with another wallpaper tool:** Aurora needs to sit above it. Most compositors stack the newest background surface on top. If Aurora ends up hidden behind your wallpaper, restart it. With DMS the service handles this by restarting whenever DMS does.
+- **Stacking with another wallpaper tool:** Aurora needs to sit above it, and at login the other tool can win the race and cover it. Aurora draws the wallpaper itself (tinted or not), so the simplest fix is to turn the other one off. With DankMaterialShell, set `"screenPreferences": {"wallpaper": []}` in `~/.config/DankMaterialShell/settings.json`: DMS still supplies the image path and colours.
 - **GPU cost:** with sound on one 1440p monitor, roughly 20 W extra on an RTX 3080. Lower `fps` to reduce it.
 - **Audio source:** `cava.conf` reads PipeWire's default output. Change `method` to `pulse` if you use PulseAudio.
 
